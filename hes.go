@@ -3,7 +3,7 @@ package main
 import (
     "io/ioutil"
     "strings"
-    "gohes/driver"
+    "github.com/Jguer/go-hes/driver"
     "log"
     "errors"
 	"encoding/json"
