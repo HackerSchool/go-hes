@@ -29,7 +29,7 @@ type keybinding struct {
 // something that 'looks' like an Arduino device.
 func findArduino() ([]string, int, error) {
 	contents, _ := ioutil.ReadDir("/dev")
-	n := 0
+	var n int
 	var duinos []string
 	// Look for what is mostly likely the Arduino device
 	for _, f := range contents {
