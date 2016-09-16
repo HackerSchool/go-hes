@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"github.com/Jguer/go-hes/driver"
 	keybd "github.com/micmonay/keybd_event"
@@ -12,14 +11,14 @@ import (
 )
 
 type keybinding struct {
-	Selk  string `json:"select"`
-	Start string `json:"start"`
-	Up    string `json:"up"`
-	Down  string `json:"down"`
-	Left  string `json:"left"`
-	Right string `json:"right"`
-	AKey  string `json:"a"`
-	BKey  string `json:"b"`
+	Left   string `json:"left"`
+	B      string `json:"b"`
+	Start  string `json:"start"`
+	Select string `json:"select"`
+	A      string `json:"a"`
+	Right  string `json:"right"`
+	Up     string `json:"up"`
+	Down   string `json:"down"`
 }
 
 // findArduino looks for the file that represents the Arduino
@@ -50,34 +49,6 @@ func findArduino() ([]string, int, error) {
 	return duinos, n, errors.New("Device Find: Unable to find HES")
 }
 
-// readProfile unmarshalls the json containing keybind information for HES
-func readProfile(jsonStr []byte) ([]keybinding, error) {
-	kbds := []keybinding{}
-	var data map[string][]json.RawMessage
-	err := json.Unmarshal(jsonStr, &data)
-	if err != nil {
-		log.Println(err)
-		return nil, errors.New("Unable to Unmarshal json")
-	}
-	for _, profile := range data["keybindings"] {
-		kbds = addKeybinding(profile, kbds)
-	}
-	return kbds, nil
-}
-
-// addKeybinding creates keybinding structs and appends them to a slice
-func addKeybinding(profile json.RawMessage, kbds []keybinding) []keybinding {
-	kb := keybinding{}
-	if err := json.Unmarshal(profile, &kb); err != nil {
-		log.Println(err)
-	} else {
-		if kb != *new(keybinding) {
-			kbds = append(kbds, kb)
-		}
-	}
-	return kbds
-}
-
 // translateKeybindings converts strings from keybinding struct to keybd identifiers
 func translateKeybindings(kb keybinding) [8]int {
 	keymap := map[string]int{
@@ -102,35 +73,25 @@ func translateKeybindings(kb keybinding) [8]int {
 	}
 
 	var kbArray [8]int
-	kbArray[0] = keymap[kb.Selk]
+	kbArray[0] = keymap[kb.Select]
 	kbArray[1] = keymap[kb.Start]
 	kbArray[2] = keymap[kb.Up]
 	kbArray[3] = keymap[kb.Down]
 	kbArray[4] = keymap[kb.Left]
 	kbArray[5] = keymap[kb.Right]
-	kbArray[6] = keymap[kb.BKey]
-	kbArray[7] = keymap[kb.AKey]
+	kbArray[6] = keymap[kb.B]
+	kbArray[7] = keymap[kb.A]
 
 	return kbArray
 }
 
 func main() {
 	var wg sync.WaitGroup
+
+	kbds, err := readProfile()
 	// Find the device that represents the arduino serial
 	// connection.
 	duinos, n, err := findArduino()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Read the whole file at once
-	// Should not be done but I'm feeling rather trusting of user input today
-	b, err := ioutil.ReadFile("mappings.json")
-	if err != nil {
-		panic(err)
-	}
-
-	kbds, err := readProfile(b)
 	if err != nil {
 		log.Fatal(err)
 	}
