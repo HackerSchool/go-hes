@@ -42,21 +42,22 @@ func configProfile(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
+	log.Printf("%+v\n", kbds)
 	if r.Method == "GET" {
-		t, _ := template.ParseFiles("tmpl/login.html")
+		t, _ := template.ParseFiles("config.html")
 		t.Execute(w, kbds)
 	} else {
 		r.ParseForm()
 		// logic part of log in
 		for key, values := range r.Form { // range over map
-			log.Println(key, values[0])
+			log.Println(key, values)
 		}
 	}
 }
 
 func startConfig() {
-	http.HandleFunc("/login", configProfile)
-	log.Println("Test server at http://127.0.0.1:9090/login")
+	http.HandleFunc("/", configProfile)
+	log.Println("Test server at http://127.0.0.1:9090/")
 	err := http.ListenAndServe(":9090", nil) // setting listening port
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)

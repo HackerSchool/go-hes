@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>HES Config</title>
+  </head>
+  <body>
+    <form action="/login" method="post">
+      {{range .}}
+      <div class="gamepad">
+        <h4>Gamepad</h4>
+        <input type="text" name="A" value="{{.A}}"> A Key </input>
+        <input type="text" name="B" value="{{.B}}"> B Key </input>
+        <input type="text" name="Start" value="{{.Start}}"> Start Key </input>
+        <input type="text" name="Select" value="{{.Select}}"> Select Key </input>
+        <input type="text" name="Left" value="{{.Left}}"> Left Key </input>
+        <input type="text" name="Right" value="{{.Right}}"> Right Key </input>
+        <input type="text" name="Up" value="{{.Up}}"> Up Key </input>
+        <input type="text" name="Down" value="{{.Down}}"> Down Key </input>
+      </div>
+      {{end}}
+      <input type="submit" value="Submit">
+    </form>
+  </body>
+</html>
