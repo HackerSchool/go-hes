@@ -11,7 +11,7 @@
       <h2>by HackerSchool</h2>
     </div>
     <div>
-      <img class="hes" src="static/hes.png"></img>
+      <img id="image" class="hes" src="static/hes.png"></img>
     </div>
     <div class="input-div">
       <form action="/login" method="post">
@@ -23,37 +23,37 @@
             <tr>
               <td><p>A Key</td>
               <td>
-                <input type="text" name="A" value="{{.A}}"></input>
+                <input id="A" type="text" name="A" value="{{.A}}"></input>
               </td>
               <td><p>Select Key</td>
               <td>
-                <input type="text" name="Select" value="{{.Select}}"></input>
+                <input id="Select" type="text" name="Select" value="{{.Select}}"></input>
               </td>
               <td><p>Left Key</td>
               <td>
-                <input type="text" name="Left" value="{{.Left}}"></input>
+                <input id="Left" type="text" name="Left" value="{{.Left}}"></input>
               </td>
               <td><p>Up Key</td>
               <td>
-                <input type="text" name="Up" value="{{.Up}}"></input>
+                <input id="Up" type="text" name="Up" value="{{.Up}}"></input>
               </td>
             </tr>
             <tr>
               <td><p>B Key</td>
               <td>
-                <input type="text" name="B" value="{{.B}}"></input>
+                <input id="B" type="text" name="B" value="{{.B}}"></input>
               </td>
               <td><p>Start Key</td>
               <td>
-                <input type="text" name="Start" value="{{.Start}}"></input>
+                <input id="Start" type="text" name="Start" value="{{.Start}}"></input>
               </td>
               <td><p>Right Key</td>
               <td>
-                <input type="text" name="Right" value="{{.Right}}"></input>
+                <input id="Right" type="text" name="Right" value="{{.Right}}"></input>
               </td>
               <td><p>Down Key</td>
               <td>
-                <input type="text" name="Down" value="{{.Down}}"></input>
+                <input id="Down" type="text" name="Down" value="{{.Down}}"></input>
               </td>
             </tr>
           </table>
@@ -65,4 +65,6 @@
       </form>
     </div>
   </body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="config.js"></script>
 </html>
