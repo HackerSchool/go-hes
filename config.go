@@ -93,8 +93,9 @@ func (k *keybinding) populate(key string, value string) {
 }
 
 func startConfig() {
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.HandleFunc("/", configProfile)
-	log.Println("Test server at http://127.0.0.1:9090/")
+	log.Println("Config at http://127.0.0.1:9090/")
 	err := http.ListenAndServe(":9090", nil) // setting listening port
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
