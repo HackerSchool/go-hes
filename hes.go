@@ -3,23 +3,27 @@ package main
 import (
 	"errors"
 	"github.com/Jguer/go-hes/driver"
-	keybd "github.com/micmonay/keybd_event"
+	keybd "github.com/Jguer/keybd_event"
+	"go.bug.st/serial"
 	"io/ioutil"
 	"log"
 	"strings"
 	"sync"
+	"time"
 )
 
 type keybinding struct {
-	Left   string `json:"left"`
+	A      string `json:"a"`
 	B      string `json:"b"`
 	Start  string `json:"start"`
 	Select string `json:"select"`
-	A      string `json:"a"`
+	Left   string `json:"left"`
 	Right  string `json:"right"`
 	Up     string `json:"up"`
 	Down   string `json:"down"`
 }
+
+const challenge string = "Hi. Who are you?"
 
 // findArduino looks for the file that represents the Arduino
 // serial connection. Returns the fully qualified path to the
@@ -91,15 +95,46 @@ func main() {
 	kbds, err := readProfile()
 	// Find the device that represents the arduino serial
 	// connection.
-	duinos, n, err := findArduino()
+	ports, err := serial.GetPortsList()
 	if err != nil {
 		log.Fatal(err)
 	}
+	if len(ports) == 0 {
+		log.Fatal("No serial ports found!")
+	}
 
-	for i := 0; i < n; i++ {
-		//log.Printf("%d %s %+v\n", i, duinos[i], kbds[i])
+	mode := &serial.Mode{
+		BaudRate: 9600,
+	}
+
+	var i int
+	for _, portName := range ports {
+		if strings.Contains(portName, "ttyS") {
+			continue
+		}
 		wg.Add(1)
-		go driver.CreateController(duinos[i], translateKeybindings(kbds[i]), &wg)
+
+		port, err := serial.OpenPort(portName, mode)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		time.Sleep(1500 * time.Millisecond)
+
+		_, err = port.Write([]byte(challenge))
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		buff := make([]byte, 30)
+		n, err := port.Read(buff)
+		if strings.Contains(string(buff[:n]), "Hi. I'm HES") {
+			log.Printf("Communication established with %v\n", portName)
+			go driver.CreateController(port, translateKeybindings(kbds[i]), &wg)
+			i++
+		}
 	}
 	wg.Wait()
 }
