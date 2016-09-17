@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"time"
 )
 
 // readProfile unmarshalls the json containing keybind information for HES.
@@ -47,11 +49,46 @@ func configProfile(w http.ResponseWriter, r *http.Request) {
 		t, _ := template.ParseFiles("config.html")
 		t.Execute(w, kbds)
 	} else {
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			log.Fatal(err)
+		}
+
+		log.Printf("%+v\n", kbds)
 		// logic part of log in
 		for key, values := range r.Form { // range over map
-			log.Println(key, values)
+			for i, value := range values {
+				kbds[i].populate(key, value)
+			}
 		}
+		err = saveProfile(kbds)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println("Saved Config. Shutting down program.")
+		time.Sleep(time.Second * 10)
+		os.Exit(0)
+	}
+}
+
+func (k *keybinding) populate(key string, value string) {
+	if key == "A" {
+		k.A = value
+	} else if key == "B" {
+		k.B = value
+	} else if key == "Start" {
+		k.Start = value
+	} else if key == "Select" {
+		k.Select = value
+	} else if key == "Left" {
+		k.Left = value
+	} else if key == "Right" {
+		k.Right = value
+	} else if key == "Up" {
+		k.Up = value
+	} else if key == "Down" {
+		k.Down = value
+	} else {
+		log.Fatalln("Unable to populate keybinding")
 	}
 }
 
