@@ -1,26 +1,29 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"github.com/Jguer/go-hes/driver"
-	keybd "github.com/micmonay/keybd_event"
+	keybd "github.com/Jguer/keybd_event"
+	"go.bug.st/serial"
 	"io/ioutil"
 	"log"
 	"strings"
 	"sync"
+	"time"
 )
 
 type keybinding struct {
-	Selk  string `json:"select"`
-	Start string `json:"start"`
-	Up    string `json:"up"`
-	Down  string `json:"down"`
-	Left  string `json:"left"`
-	Right string `json:"right"`
-	AKey  string `json:"a"`
-	BKey  string `json:"b"`
+	A      string `json:"a"`
+	B      string `json:"b"`
+	Start  string `json:"start"`
+	Select string `json:"select"`
+	Left   string `json:"left"`
+	Right  string `json:"right"`
+	Up     string `json:"up"`
+	Down   string `json:"down"`
 }
+
+const challenge string = "Hi. Who are you?"
 
 // findArduino looks for the file that represents the Arduino
 // serial connection. Returns the fully qualified path to the
@@ -50,34 +53,6 @@ func findArduino() ([]string, int, error) {
 	return duinos, n, errors.New("Device Find: Unable to find HES")
 }
 
-// readProfile unmarshalls the json containing keybind information for HES
-func readProfile(jsonStr []byte) ([]keybinding, error) {
-	kbds := []keybinding{}
-	var data map[string][]json.RawMessage
-	err := json.Unmarshal(jsonStr, &data)
-	if err != nil {
-		log.Println(err)
-		return nil, errors.New("Unable to Unmarshal json")
-	}
-	for _, profile := range data["keybindings"] {
-		kbds = addKeybinding(profile, kbds)
-	}
-	return kbds, nil
-}
-
-// addKeybinding creates keybinding structs and appends them to a slice
-func addKeybinding(profile json.RawMessage, kbds []keybinding) []keybinding {
-	kb := keybinding{}
-	if err := json.Unmarshal(profile, &kb); err != nil {
-		log.Println(err)
-	} else {
-		if kb != *new(keybinding) {
-			kbds = append(kbds, kb)
-		}
-	}
-	return kbds
-}
-
 // translateKeybindings converts strings from keybinding struct to keybd identifiers
 func translateKeybindings(kb keybinding) [8]int {
 	keymap := map[string]int{
@@ -102,43 +77,77 @@ func translateKeybindings(kb keybinding) [8]int {
 	}
 
 	var kbArray [8]int
-	kbArray[0] = keymap[kb.Selk]
+	kbArray[0] = keymap[kb.Select]
 	kbArray[1] = keymap[kb.Start]
 	kbArray[2] = keymap[kb.Up]
 	kbArray[3] = keymap[kb.Down]
 	kbArray[4] = keymap[kb.Left]
 	kbArray[5] = keymap[kb.Right]
-	kbArray[6] = keymap[kb.BKey]
-	kbArray[7] = keymap[kb.AKey]
+	kbArray[6] = keymap[kb.B]
+	kbArray[7] = keymap[kb.A]
 
 	return kbArray
 }
 
 func main() {
 	var wg sync.WaitGroup
+
+	kbds, err := readProfile()
 	// Find the device that represents the arduino serial
 	// connection.
-	duinos, n, err := findArduino()
+	ports, err := serial.GetPortsList()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// Read the whole file at once
-	// Should not be done but I'm feeling rather trusting of user input today
-	b, err := ioutil.ReadFile("mappings.json")
-	if err != nil {
-		panic(err)
+	if len(ports) == 0 {
+		log.Fatal("No serial ports found!")
 	}
 
-	kbds, err := readProfile(b)
-	if err != nil {
-		log.Fatal(err)
+	mode := &serial.Mode{
+		BaudRate: 9600,
 	}
 
-	for i := 0; i < n; i++ {
-		//log.Printf("%d %s %+v\n", i, duinos[i], kbds[i])
-		wg.Add(1)
-		go driver.CreateController(duinos[i], translateKeybindings(kbds[i]), &wg)
+	var i int
+	resP := make(chan *serial.SerialPort, 1)
+	for _, portName := range ports {
+		log.Println("Attempting connection to " + portName)
+		go func() {
+			port, err := serial.OpenPort(portName, mode)
+			if err != nil {
+				log.Println(err)
+			}
+
+			log.Println("Executing hand shake")
+			time.Sleep(1500 * time.Millisecond)
+			_, err = port.Write([]byte(challenge))
+			if err != nil {
+				log.Println(err)
+			}
+
+			buff := make([]byte, 30)
+			n, err := port.Read(buff)
+			if err != nil {
+				log.Println(err)
+			}
+
+			if strings.Contains(string(buff[:n]), "Hi. I'm HES") {
+				resP <- port
+			}
+			resP <- nil
+		}()
+
+		select {
+		case port := <-resP:
+			if port != nil {
+				log.Printf("Communication established with %v\n", portName)
+				wg.Add(1)
+				go driver.CreateController(port, translateKeybindings(kbds[i]), &wg)
+				i++
+			}
+		case <-time.After(time.Second * 5):
+			log.Println("Connection timed out on " + portName)
+			continue
+		}
 	}
 	wg.Wait()
 }
