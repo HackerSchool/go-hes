@@ -2,24 +2,67 @@
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="config.css">
     <title>HES Config</title>
   </head>
-  <body>
-    <form action="/login" method="post">
-      {{range .}}
-      <div class="gamepad">
-        <h4>Gamepad</h4>
-        <input type="text" name="A" value="{{.A}}"> A Key </input>
-        <input type="text" name="B" value="{{.B}}"> B Key </input>
-        <input type="text" name="Start" value="{{.Start}}"> Start Key </input>
-        <input type="text" name="Select" value="{{.Select}}"> Select Key </input>
-        <input type="text" name="Left" value="{{.Left}}"> Left Key </input>
-        <input type="text" name="Right" value="{{.Right}}"> Right Key </input>
-        <input type="text" name="Up" value="{{.Up}}"> Up Key </input>
-        <input type="text" name="Down" value="{{.Down}}"> Down Key </input>
-      </div>
-      {{end}}
-      <input type="submit" value="Submit">
-    </form>
+  <body class="bckg-stripes">
+    <div class="header">
+      <h1>HACKER ENTERTAINMENT SYSTEM CONFIG 2.0</h1>
+      <h2>by HackerSchool</h2>
+    </div>
+    <div>
+      <img class="hes" src="hes.png"></img>
+    </div>
+    <div class="input-div">
+      <form action="/login" method="post">
+        {{range .}}
+          <table class="mytable" align="center">
+            <hr>
+            <tr>
+            </tr>
+            <tr>
+              <td><p>A Key</td>
+              <td>
+                <input type="text" name="A" value="{{.A}}"></input>
+              </td>
+              <td><p>Select Key</td>
+              <td>
+                <input type="text" name="Select" value="{{.Select}}"></input>
+              </td>
+              <td><p>Left Key</td>
+              <td>
+                <input type="text" name="Left" value="{{.Left}}"></input>
+              </td>
+              <td><p>Up Key</td>
+              <td>
+                <input type="text" name="Up" value="{{.Up}}"></input>
+              </td>
+            </tr>
+            <tr>
+              <td><p>B Key</td>
+              <td>
+                <input type="text" name="B" value="{{.B}}"></input>
+              </td>
+              <td><p>Start Key</td>
+              <td>
+                <input type="text" name="Start" value="{{.Start}}"></input>
+              </td>
+              <td><p>Right Key</td>
+              <td>
+                <input type="text" name="Right" value="{{.Right}}"></input>
+              </td>
+              <td><p>Down Key</td>
+              <td>
+                <input type="text" name="Down" value="{{.Down}}"></input>
+              </td>
+            </tr>
+          </table>
+          <hr>
+        {{end}}
+        <p>
+        <input class="myButton" type="submit" value="SUBMIT">
+        <br>
+      </form>
+    </div>
   </body>
 </html>

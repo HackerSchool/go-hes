@@ -1,0 +1,103 @@
+body {
+	font-family: Verdana, Geneva, sans-serif;
+	margin: 0;
+	overflow-x: hidden; 
+}
+
+/************************************************/
+/* Pretty Colorful Retro Stripes */
+.bckg-stripes {
+	color: black;
+  	background: linear-gradient(
+    	to right,
+    	#F54225 16.6vw,
+    	#EDBE00 1px,
+    	#EDBE00 33.2vw,
+    	#9CDB20 1px,
+    	#9CDB20 49.8vw,
+    	#72D9FF 1px,
+    	#72D9FF 66.4vw,
+    	#1D99FF 1px,
+    	#1D99FF 83vw,
+    	#A37EFF 1px, 
+    	#A37EFF 100vw 
+  	);
+}
+
+/************************************************/
+/* HACKER ENTERTAINMENT SYSTEM HEADER */
+.header {
+	color: white;
+	text-align: center;
+	background: black;
+	width: 100vw;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
+/************************************************/
+/* Controller HES image */
+.hes {
+	display: block;
+	margin: auto;
+	margin-top: 10vh;
+	height: 40vh;
+}
+
+/************************************************/
+/* Input Division Design */
+.input-div {
+	background: black;
+	margin-top: 10vh;
+	width: 100vw;
+	padding-bottom: 20px;
+}
+
+.input-div p {
+	color: white;
+	text-align: right;
+}
+
+/************************************************/
+/* Button Design */
+.myButton {
+	background-color:#000000;
+	border:3px solid #ffffff;
+	display:block;
+	margin: auto;
+	cursor:pointer;
+	color:#ffffff;
+	font-size:19px;
+	font-weight:bold;
+	padding:18px 46px;
+	text-decoration:none;
+}
+.myButton:hover {
+	background-color:#999999;
+}
+.myButton:active {
+	position:relative;
+	top:1px;
+}
+
+/************************************************/
+/* Media Queries */
+@media screen and (max-width: 860px){
+/* Display the table differently*/
+
+	table, thead, tbody, th, td, tr { 
+		display: block;
+		text-align: center; 
+	}
+	td { 
+		/* Behave  like a "row" */
+		position: relative;
+	}
+ }
+
+ @media screen and (max-width: 1023px){
+ 	.hes {
+ 		width: 100vw;
+ 		height: auto;
+ 	}
+ }
