@@ -108,32 +108,45 @@ func main() {
 	}
 
 	var i int
+	resP := make(chan *serial.SerialPort, 1)
 	for _, portName := range ports {
-		if strings.Contains(portName, "ttyS") {
+		log.Println("Attempting connection to " + portName)
+		go func() {
+			port, err := serial.OpenPort(portName, mode)
+			if err != nil {
+				log.Println(err)
+			}
+
+			log.Println("Executing hand shake")
+			time.Sleep(1500 * time.Millisecond)
+			_, err = port.Write([]byte(challenge))
+			if err != nil {
+				log.Println(err)
+			}
+
+			buff := make([]byte, 30)
+			n, err := port.Read(buff)
+			if err != nil {
+				log.Println(err)
+			}
+
+			if strings.Contains(string(buff[:n]), "Hi. I'm HES") {
+				resP <- port
+			}
+			resP <- nil
+		}()
+
+		select {
+		case port := <-resP:
+			if port != nil {
+				log.Printf("Communication established with %v\n", portName)
+				wg.Add(1)
+				go driver.CreateController(port, translateKeybindings(kbds[i]), &wg)
+				i++
+			}
+		case <-time.After(time.Second * 5):
+			log.Println("Connection timed out on " + portName)
 			continue
-		}
-		wg.Add(1)
-
-		port, err := serial.OpenPort(portName, mode)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-
-		time.Sleep(1500 * time.Millisecond)
-
-		_, err = port.Write([]byte(challenge))
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-
-		buff := make([]byte, 30)
-		n, err := port.Read(buff)
-		if strings.Contains(string(buff[:n]), "Hi. I'm HES") {
-			log.Printf("Communication established with %v\n", portName)
-			go driver.CreateController(port, translateKeybindings(kbds[i]), &wg)
-			i++
 		}
 	}
 	wg.Wait()
