@@ -1,6 +1,1 @@
-[{"left": "a", "b": "c", "start": "space", "select": "esc", "a": "v", "right": "d", "up": "w", "down": "s"},
-{"left": "left", "b": "m", "start": "l", "select": "k", "a": "n", "right": "right", "up": "up", "down": "down"},
-{"left": "left", "b": "m", "start": "l", "select": "k", "a": "n", "right": "right", "up": "up", "down": "down"},
-{"left": "left", "b": "m", "start": "l", "select": "k", "a": "n", "right": "right", "up": "up", "down": "down"}]
-
-
+[{"a":"v","b":"c","start":"space","select":"esc","left":"a","right":"d","up":"w","down":"s"},{"a":"n","b":"m","start":"l","select":"k","left":"left","right":"right","up":"up","down":"down"},{"a":"n","b":"m","start":"l","select":"k","left":"left","right":"right","up":"up","down":"down"},{"a":"n","b":"m","start":"l","select":"k","left":"left","right":"right","up":"up","down":"down"}]
