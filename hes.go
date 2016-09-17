@@ -1,12 +1,11 @@
 package main
 
 import (
-	"errors"
 	"github.com/Jguer/go-hes/driver"
 	keybd "github.com/Jguer/keybd_event"
 	"go.bug.st/serial"
-	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -24,34 +23,7 @@ type keybinding struct {
 }
 
 const challenge string = "Hi. Who are you?"
-
-// findArduino looks for the file that represents the Arduino
-// serial connection. Returns the fully qualified path to the
-// device if we are able to find a likely candidate for an
-// Arduino, otherwise an empty string if unable to find
-// something that 'looks' like an Arduino device.
-func findArduino() ([]string, int, error) {
-	contents, _ := ioutil.ReadDir("/dev")
-	var n int
-	var duinos []string
-	// Look for what is mostly likely the Arduino device
-	for _, f := range contents {
-		if strings.Contains(f.Name(), "tty.usbserial") ||
-			strings.Contains(f.Name(), "ttyUSB") {
-			duinos = append(duinos, "/dev/"+f.Name())
-			// log.Println("/dev/" + f.Name())
-			n++
-		}
-	}
-
-	if n != 0 {
-		return duinos, n, nil
-	}
-
-	// Have not been able to find a USB device that 'looks'
-	// like an Arduino.
-	return duinos, n, errors.New("Device Find: Unable to find HES")
-}
+const filename string = "mappings.json"
 
 // translateKeybindings converts strings from keybinding struct to keybd identifiers
 func translateKeybindings(kb keybinding) [8]int {
@@ -91,6 +63,12 @@ func translateKeybindings(kb keybinding) [8]int {
 
 func main() {
 	var wg sync.WaitGroup
+
+	for _, arg := range os.Args {
+		if strings.Contains(arg, "config") {
+			startConfig()
+		}
+	}
 
 	kbds, err := readProfile()
 	// Find the device that represents the arduino serial

@@ -5,6 +5,7 @@ import (
 	keybd "github.com/micmonay/keybd_event"
 	"go.bug.st/serial"
 	"log"
+	"runtime"
 	"strconv"
 	"sync"
 	"time"
@@ -13,8 +14,8 @@ import (
 const repeatDelay time.Duration = 160 //Milliseconds
 const sleepTime time.Duration = 1000  //Milliseconds
 
-// CreateController creates a new serial connection to a device
-// and handles all communication and key interpretation
+// CreateController reads all valid serial ports
+// and handles all communication and key interpretation.
 func CreateController(port *serial.SerialPort, kbArray [8]int, wg *sync.WaitGroup) {
 	defer port.Close()
 	// Creates Keyboard
@@ -23,10 +24,12 @@ func CreateController(port *serial.SerialPort, kbArray [8]int, wg *sync.WaitGrou
 		log.Fatal(err)
 	}
 	// Arduino and Keyboard Setup time
-	time.Sleep(sleepTime * time.Millisecond)
+	if runtime.GOOS == "linux" {
+		time.Sleep(sleepTime * time.Millisecond)
+	}
 
 	reader := bufio.NewReader(port)
-	//Each HES key has it's on channel to signal completion
+	//Each HES key has its on channel to signal completion
 	var signal [8]chan bool
 	index := 0
 	counter := 0
@@ -71,7 +74,7 @@ func gkey(key byte, kbArray [8]int) int {
 	return kbArray[x]
 }
 
-// sendKeys handles sending keystrokes to host system
+// sendKeys handles sending keystrokes to host system.
 func sendKeys(signal chan bool, key byte, kb keybd.KeyBonding, kbArray [8]int) {
 	kb.SetKeys(gkey(key, kbArray)) //set keys
 	var err error
