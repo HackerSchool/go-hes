@@ -2,69 +2,77 @@
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <link rel="stylesheet" href="static/config.css">
-    <title>HES Config</title>
+    <link rel="shortcut icon" type="image/x-icon" href="static/title_logo.png"/>
+    <title>HES 2.0 Config</title>
   </head>
   <body class="bckg-stripes">
     <div class="header">
       <h1>HACKER ENTERTAINMENT SYSTEM CONFIG 2.0</h1>
-      <h2>by HackerSchool</h2>
+      <h2>Choose a gamepad to configure</h2>
+      <select id="selector"></select>
     </div>
     <div>
-      <img id="image" class="hes" src="static/hes.png"></img>
+      <img id="image" src="static/hes.png"></img>
     </div>
-    <div class="input-div">
+    <div class="input-div">   
       <form action="/login" method="post">
-        {{range .}}
-          <table class="mytable" align="center">
-            <hr>
+        {{range $index, $results := .}}
+          <script type="text/javascript">
+            $('#selector').append($('<option>', {
+                value: {{ $index }},
+                text: '{{ $index }}'
+            }));
+          </script>  
+          <table id="{{ $index }}" class="mytable" align="center">
             <tr>
             </tr>
             <tr>
               <td><p>A Key</td>
               <td>
-                <input id="A" type="text" name="A" value="{{.A}}"></input>
+                <input class="A" type="text" name="A" value="{{.A}}"></input>
               </td>
               <td><p>Select Key</td>
               <td>
-                <input id="Select" type="text" name="Select" value="{{.Select}}"></input>
+                <input class="Select" type="text" name="Select" value="{{.Select}}"></input>
               </td>
               <td><p>Left Key</td>
               <td>
-                <input id="Left" type="text" name="Left" value="{{.Left}}"></input>
+                <input class="Left" type="text" name="Left" value="{{.Left}}"></input>
               </td>
               <td><p>Up Key</td>
               <td>
-                <input id="Up" type="text" name="Up" value="{{.Up}}"></input>
+                <input class="Up" type="text" name="Up" value="{{.Up}}"></input>
               </td>
             </tr>
             <tr>
               <td><p>B Key</td>
               <td>
-                <input id="B" type="text" name="B" value="{{.B}}"></input>
+                <input class="B" type="text" name="B" value="{{.B}}"></input>
               </td>
               <td><p>Start Key</td>
               <td>
-                <input id="Start" type="text" name="Start" value="{{.Start}}"></input>
+                <input class="Start" type="text" name="Start" value="{{.Start}}"></input>
               </td>
               <td><p>Right Key</td>
               <td>
-                <input id="Right" type="text" name="Right" value="{{.Right}}"></input>
+                <input class="Right" type="text" name="Right" value="{{.Right}}"></input>
               </td>
               <td><p>Down Key</td>
               <td>
-                <input id="Down" type="text" name="Down" value="{{.Down}}"></input>
+                <input class="Down" type="text" name="Down" value="{{.Down}}"></input>
               </td>
-            </tr>
+            </tr> 
           </table>
-          <hr>
         {{end}}
-        <p>
+        <br>
+        <hr>
+        <br>
         <input class="myButton" type="submit" value="SUBMIT">
         <br>
       </form>
     </div>
   </body>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <script src="static/config.js"></script>
 </html>

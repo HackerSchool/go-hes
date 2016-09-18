@@ -32,12 +32,12 @@ body {
 	background: black;
 	width: 100vw;
 	padding-top: 20px;
-	padding-bottom: 20px;
+	padding-bottom: 30px;
 }
 
 /************************************************/
 /* Controller HES image */
-.hes {
+#image {
 	display: block;
 	margin: auto;
 	margin-top: 10vh;
@@ -45,17 +45,41 @@ body {
 }
 
 /************************************************/
-/* Input Division Design */
+/* Input Division and table Design */
 .input-div {
 	background: black;
 	margin-top: 10vh;
 	width: 100vw;
 	padding-bottom: 20px;
+	padding-top: 20px;
 }
 
 .input-div p {
 	color: white;
+}
+
+td {
 	text-align: right;
+}
+
+/************************************************/
+/* Selector Design */
+
+select {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	background-color: #FFFFFF;
+	border-radius: 0;
+	border: none;
+	width: 100px;
+	text-align: center;
+	font-size:19px;
+	font-weight:bold;
+	
+}
+
+select option {
+	font-weight:normal;
 }
 
 /************************************************/
@@ -89,14 +113,14 @@ body {
 		display: block;
 		text-align: center; 
 	}
-	td { 
+	td p{ 
 		/* Behave  like a "row" */
 		position: relative;
 	}
  }
 
  @media screen and (max-width: 1023px){
- 	.hes {
+ 	#image {
  		width: 100vw;
  		height: auto;
  	}
