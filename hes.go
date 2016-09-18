@@ -64,12 +64,12 @@ func translateKeybindings(kb keybinding) [8]int {
 		"7":     keybd.VK_7,
 		"8":     keybd.VK_8,
 		"9":     keybd.VK_9,
+		"up":    keybd.VK_UP,
 		"down":  keybd.VK_DOWN,
-		"esc":   keybd.VK_ESC,
 		"left":  keybd.VK_LEFT,
 		"right": keybd.VK_RIGHT,
+		"esc":   keybd.VK_ESC,
 		"space": keybd.VK_ENTER,
-		"up":    keybd.VK_UP,
 	}
 
 	var kbArray [8]int
