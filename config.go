@@ -111,7 +111,8 @@ func (k *keybinding) populate(key string, value string) {
 	}
 
 	if _, ok := keymap[value]; !ok {
-		log.Fatalln("Unable to populate keybinding")
+		log.Println("Invalid Key")
+		return
 	}
 
 	if key == "A" {
