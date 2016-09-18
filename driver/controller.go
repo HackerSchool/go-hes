@@ -2,7 +2,7 @@ package driver
 
 import (
 	"bufio"
-	keybd "github.com/micmonay/keybd_event"
+	keybd "github.com/Jguer/keybd_event"
 	"go.bug.st/serial"
 	"log"
 	"runtime"
