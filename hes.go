@@ -112,6 +112,9 @@ func main() {
 	var i int
 	resP := make(chan *serial.SerialPort, 1)
 	for _, portName := range ports {
+		if strings.Contains(portName, "tty") {
+			continue
+		}
 		log.Println("Attempting connection to " + portName)
 		go func() {
 			port, err := serial.OpenPort(portName, mode)
@@ -146,7 +149,7 @@ func main() {
 				go driver.CreateController(port, translateKeybindings(kbds[i]), &wg)
 				i++
 			}
-		case <-time.After(time.Second * 5):
+		case <-time.After(time.Second * 4):
 			log.Println("Connection timed out on " + portName)
 			continue
 		}
