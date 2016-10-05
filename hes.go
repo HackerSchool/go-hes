@@ -6,6 +6,7 @@ import (
 	"go.bug.st/serial"
 	"log"
 	"os"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -112,9 +113,14 @@ func main() {
 	var i int
 	resP := make(chan *serial.SerialPort, 1)
 	for _, portName := range ports {
-		if strings.Contains(portName, "tty") {
-			continue
+		if runtime.GOOS == "linux" || runtime.GOOS == "darwin" {
+			log.Println("Going in")
+			log.Println(portName)
+			if !strings.Contains(portName, "usb") && !strings.Contains(portName, "USB") {
+				continue
+			}
 		}
+
 		log.Println("Attempting connection to " + portName)
 		go func() {
 			port, err := serial.OpenPort(portName, mode)
