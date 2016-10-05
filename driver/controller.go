@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-const repeatDelay time.Duration = 60 //Milliseconds
-const sleepTime time.Duration = 1200 //Milliseconds
+const repeatDelay time.Duration = 150 //Milliseconds
+const sleepTime time.Duration = 1200  //Milliseconds
 
 // CreateController reads all valid serial ports
 // and handles all communication and key interpretation.
