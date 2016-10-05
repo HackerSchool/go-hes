@@ -3,12 +3,11 @@ package main
 import (
 	"github.com/Jguer/go-hes/driver"
 	keybd "github.com/Jguer/keybd_event"
-	"go.bug.st/serial"
+	s "go.bug.st/serial.v1"
 	"log"
 	"os"
 	"runtime"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -23,7 +22,13 @@ type keybinding struct {
 	Down   string `json:"down"`
 }
 
+type serialport struct {
+	name string
+	sp   s.Port
+}
+
 const challenge string = "Hi. Who are you?"
+const response string = "Hi. I'm HES"
 const filename string = "mappings.json"
 
 // translateKeybindings converts strings from keybinding struct to keybd identifiers
@@ -87,78 +92,109 @@ func translateKeybindings(kb keybinding) [8]int {
 }
 
 func main() {
-	var wg sync.WaitGroup
-
-	for _, arg := range os.Args {
+	probe := true
+	for _, arg := range os.Args[1:] {
 		if strings.Contains(arg, "config") {
+			// If args include config then you'll be taken to configure the controller
 			startConfig()
+		} else if strings.Contains(arg, "skip") {
+			// If args include skip, then the driver won't search for new controllers.
+			probe = false
 		}
 	}
 
+	// read keybindings
 	kbds, err := readProfile()
-	// Find the device that represents the arduino serial
-	// connection.
-	ports, err := serial.GetPortsList()
 	if err != nil {
 		log.Fatal(err)
 	}
-	if len(ports) == 0 {
-		log.Fatal("No serial ports found!")
-	}
 
-	mode := &serial.Mode{
+	mode := &s.Mode{
 		BaudRate: 9600,
 	}
 
+	resP := make(chan serialport, 1)
+	exit := make(chan bool, 1)
+	var connections []string
 	var i int
-	resP := make(chan *serial.SerialPort, 1)
-	for _, portName := range ports {
-		if runtime.GOOS == "linux" || runtime.GOOS == "darwin" {
-			log.Println("Going in")
-			log.Println(portName)
-			if !strings.Contains(portName, "usb") && !strings.Contains(portName, "USB") {
-				continue
+
+	for {
+		if len(connections) == 0 || probe == true {
+			// Find the device that represents the arduino serial
+			// connection.
+			ports, err := s.GetPortsList()
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			for _, portName := range ports {
+				// Skip unnecessary ports in linux and OSX
+				if runtime.GOOS == "linux" || runtime.GOOS == "darwin" {
+					if !strings.Contains(portName, "usb") && !strings.Contains(portName, "USB") {
+						continue
+					}
+				}
+
+				// Check if controller is already in use.
+				found := false
+				for _, controller := range connections {
+					if controller == portName {
+						found = true
+					}
+				}
+
+				if found {
+					continue
+				}
+
+				connections = append(connections, portName)
+				go handshake(portName, mode, resP)
 			}
 		}
-
-		log.Println("Attempting connection to " + portName)
-		go func() {
-			port, err := serial.OpenPort(portName, mode)
-			if err != nil {
-				log.Println(err)
-			}
-
-			log.Println("Executing hand shake")
-			time.Sleep(1500 * time.Millisecond)
-			_, err = port.Write([]byte(challenge))
-			if err != nil {
-				log.Println(err)
-			}
-
-			buff := make([]byte, 30)
-			n, err := port.Read(buff)
-			if err != nil {
-				log.Println(err)
-			}
-
-			if strings.Contains(string(buff[:n]), "Hi. I'm HES") {
-				resP <- port
-			}
-			resP <- nil
-		}()
 
 		select {
 		case port := <-resP:
-			if port != nil {
-				log.Printf("Communication established with %v\n", portName)
-				wg.Add(1)
-				go driver.CreateController(port, translateKeybindings(kbds[i]), &wg)
+			if port.sp != nil {
+				log.Printf("Communication established with %v\n", port.name)
+				go driver.CreateController(port.sp, translateKeybindings(kbds[i]), exit)
 				i++
 			}
-		case <-time.After(time.Second * 4):
-			log.Println("Connection timed out on " + portName)
+		case <-time.After(time.Second * 10):
 			continue
+		case <-exit:
+			os.Exit(0)
 		}
 	}
-	wg.Wait()
+}
+
+func handshake(portName string, mode *s.Mode, resP chan serialport) {
+	port, err := s.Open(portName, mode)
+	if err != nil {
+		log.Println(err)
+	}
+
+	log.Println("Executing hand shake")
+	time.Sleep(1500 * time.Millisecond)
+	_, err = port.Write([]byte(challenge))
+	if err != nil {
+		log.Println(err)
+	}
+
+	buff := make([]byte, 30)
+	n, err := port.Read(buff)
+	if err != nil {
+		log.Println(err)
+	}
+
+	if strings.Contains(string(buff[:n]), response) {
+		resP <- serialport{
+			name: portName,
+			sp:   port,
+		}
+	}
+
+	resP <- serialport{
+		name: portName,
+		sp:   nil,
+	}
 }
