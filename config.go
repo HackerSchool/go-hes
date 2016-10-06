@@ -2,11 +2,12 @@ package main
 
 import (
 	"encoding/json"
-	keybd "github.com/Jguer/keybd_event"
 	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	keybd "github.com/Jguer/keybd_event"
 )
 
 // readProfile unmarshalls the json containing keybind information for HES.
@@ -48,7 +49,7 @@ func configProfile(w http.ResponseWriter, r *http.Request) {
 		t, _ := template.ParseFiles("config.html")
 		t.Execute(w, kbds)
 	} else {
-		if err := r.ParseForm(); err != nil {
+		if errf := r.ParseForm(); errf != nil {
 			log.Fatal(err)
 		}
 		// logic part of log in
@@ -106,7 +107,8 @@ func (k *keybinding) populate(key string, value string) {
 		"esc":   keybd.VK_ESC,
 		"left":  keybd.VK_LEFT,
 		"right": keybd.VK_RIGHT,
-		"space": keybd.VK_ENTER,
+		"space": keybd.VK_SPACE,
+		"enter": keybd.VK_ENTER,
 		"up":    keybd.VK_UP,
 	}
 

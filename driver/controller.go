@@ -2,12 +2,13 @@ package driver
 
 import (
 	"bufio"
-	keybd "github.com/Jguer/keybd_event"
-	s "go.bug.st/serial.v1"
 	"log"
 	"runtime"
 	"strconv"
 	"time"
+
+	keybd "github.com/Jguer/keybd_event"
+	s "go.bug.st/serial.v1"
 )
 
 const repeatDelay time.Duration = 150 //Milliseconds
@@ -16,7 +17,6 @@ const sleepTime time.Duration = 1200  //Milliseconds
 // CreateController reads all valid serial ports
 // and handles all communication and key interpretation.
 func CreateController(port s.Port, kbArray [8]int, exit chan bool) {
-	defer port.Close()
 	// Creates Keyboard
 	kb, err := keybd.NewKeyBonding()
 	if err != nil {
@@ -51,8 +51,8 @@ func CreateController(port s.Port, kbArray [8]int, exit chan bool) {
 			if index == 0 {
 				counter++
 				if counter == 5 {
+					port.Close()
 					exit <- true
-					return
 				}
 			} else {
 				counter = 0

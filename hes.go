@@ -1,14 +1,15 @@
 package main
 
 import (
-	"github.com/Jguer/go-hes/driver"
-	keybd "github.com/Jguer/keybd_event"
-	s "go.bug.st/serial.v1"
 	"log"
 	"os"
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/Jguer/go-hes/driver"
+	keybd "github.com/Jguer/keybd_event"
+	s "go.bug.st/serial.v1"
 )
 
 type keybinding struct {
@@ -75,7 +76,8 @@ func translateKeybindings(kb keybinding) [8]int {
 		"left":  keybd.VK_LEFT,
 		"right": keybd.VK_RIGHT,
 		"esc":   keybd.VK_ESC,
-		"space": keybd.VK_ENTER,
+		"space": keybd.VK_SPACE,
+		"enter": keybd.VK_ENTER,
 	}
 
 	var kbArray [8]int
