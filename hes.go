@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"os"
 	"runtime"
@@ -93,6 +94,20 @@ func translateKeybindings(kb keybinding) [8]int {
 	return kbArray
 }
 
+func defaultProfile() (kbds []keybinding, err error) {
+	byt := []byte(`[{"a":"v","b":"c","start":"esc","select":"b","left":"a","right":"d","up":"w","down":"s"},
+        {"a":"n","b":"m","start":"l","select":"k","left":"left","right":"right","up":"up","down":"down"},
+        {"a":"n","b":"m","start":"l","select":"k","left":"left","right":"right","up":"up","down":"down"},
+        {"a":"n","b":"m","start":"l","select":"k","left":"left","right":"right","up":"up","down":"down"}]`)
+
+	err = json.Unmarshal(byt, &kbds)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func main() {
 	probe := true
 	for _, arg := range os.Args[1:] {
@@ -108,7 +123,11 @@ func main() {
 	// read keybindings
 	kbds, err := readProfile()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		kbds, err = defaultProfile()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	mode := &s.Mode{
