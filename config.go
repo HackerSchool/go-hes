@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 
-	keybd "github.com/Jguer/keybd_event"
+	keybd "github.com/jguer/keybd_event"
 )
 
 // readProfile unmarshalls the json containing keybind information for HES.

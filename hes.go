@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Jguer/go-hes/driver"
-	keybd "github.com/Jguer/keybd_event"
+	"github.com/jguer/go-hes/driver"
+	keybd "github.com/jguer/keybd_event"
 	s "go.bug.st/serial.v1"
 )
 

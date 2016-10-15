@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	keybd "github.com/Jguer/keybd_event"
+	keybd "github.com/jguer/keybd_event"
 	s "go.bug.st/serial.v1"
 )
 
