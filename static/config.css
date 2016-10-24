@@ -40,15 +40,15 @@ body {
 #image {
 	display: block;
 	margin: auto;
-	margin-top: 10vh;
-	height: 40vh;
+	margin-top: 5vh;
+	height: 25vh;
 }
 
 /************************************************/
 /* Input Division and table Design */
 .input-div {
 	background: black;
-	margin-top: 10vh;
+	margin-top: 5vh;
 	width: 100vw;
 	padding-bottom: 20px;
 	padding-top: 20px;
@@ -62,6 +62,9 @@ td {
 	text-align: right;
 }
 
+input:not(.myButton) {
+	width: 100px;
+}
 /************************************************/
 /* Selector Design */
 
@@ -71,9 +74,9 @@ select {
 	background-color: #FFFFFF;
 	border-radius: 0;
 	border: none;
-	width: 100px;
+	width: 70px;
 	text-align: center;
-	font-size:19px;
+	font-size:15px;
 	font-weight:bold;
 	
 }
@@ -91,9 +94,9 @@ select option {
 	margin: auto;
 	cursor:pointer;
 	color:#ffffff;
-	font-size:19px;
+	font-size:15px;
 	font-weight:bold;
-	padding:18px 46px;
+	padding:15px 40px;
 	text-decoration:none;
 }
 .myButton:hover {

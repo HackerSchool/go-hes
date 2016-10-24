@@ -9,8 +9,8 @@
   </head>
   <body class="bckg-stripes">
     <div class="header">
-      <h1>HACKER ENTERTAINMENT SYSTEM CONFIG 2.0</h1>
-      <h2>Choose a gamepad to configure</h2>
+      <h2>HACKER ENTERTAINMENT SYSTEM CONFIG 2.0</h2>
+      <h3>Choose a gamepad to configure</h3>
       <select id="selector"></select>
     </div>
     <div>
@@ -29,39 +29,39 @@
             <tr>
             </tr>
             <tr>
-              <td><p>A Key</td>
-              <td>
-                <input class="A" type="text" name="A" value="{{.A}}"></input>
-              </td>
-              <td><p>Select Key</td>
-              <td>
-                <input class="Select" type="text" name="Select" value="{{.Select}}"></input>
-              </td>
               <td><p>Left Key</td>
               <td>
-                <input class="Left" type="text" name="Left" value="{{.Left}}"></input>
+                <input id="{{ $index }}Left" class="Left" type="text" name="Left" value="{{.Left}}"></input>
               </td>
               <td><p>Up Key</td>
               <td>
-                <input class="Up" type="text" name="Up" value="{{.Up}}"></input>
+                <input id="{{ $index }}Up" class="Up" type="text" name="Up" value="{{.Up}}"></input>
+              <td><p>Select Key</td>
+              <td>
+                <input id="{{ $index }}Select" class="Select" type="text" name="Select" value="{{.Select}}"></input>
+              </td>
+              </td>
+              <td><p>A Key</td>
+              <td>
+                <input id="{{ $index }}A" class="A" type="text" name="A" value="{{.A}}"></input>
               </td>
             </tr>
             <tr>
-              <td><p>B Key</td>
-              <td>
-                <input class="B" type="text" name="B" value="{{.B}}"></input>
-              </td>
-              <td><p>Start Key</td>
-              <td>
-                <input class="Start" type="text" name="Start" value="{{.Start}}"></input>
-              </td>
               <td><p>Right Key</td>
               <td>
-                <input class="Right" type="text" name="Right" value="{{.Right}}"></input>
+                <input id="{{ $index }}Right" class="Right" type="text" name="Right" value="{{.Right}}"></input>
               </td>
               <td><p>Down Key</td>
               <td>
-                <input class="Down" type="text" name="Down" value="{{.Down}}"></input>
+                <input id="{{ $index }}Down" class="Down" type="text" name="Down" value="{{.Down}}"></input>
+              </td>
+              <td><p>Start Key</td>
+              <td>
+                <input id="{{ $index }}Start" class="Start" type="text" name="Start" value="{{.Start}}"></input>
+              </td>
+              <td><p>B Key</td>
+              <td>
+                <input id="{{ $index }}B" class="B" type="text" name="B" value="{{.B}}"></input>
               </td>
             </tr> 
           </table>
