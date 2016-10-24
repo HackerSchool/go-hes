@@ -6,8 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
-	"time"
+
+	keybd "github.com/jguer/keybd_event"
 )
 
 // readProfile unmarshalls the json containing keybind information for HES.
@@ -49,11 +49,9 @@ func configProfile(w http.ResponseWriter, r *http.Request) {
 		t, _ := template.ParseFiles("config.html")
 		t.Execute(w, kbds)
 	} else {
-		if err := r.ParseForm(); err != nil {
+		if errf := r.ParseForm(); errf != nil {
 			log.Fatal(err)
 		}
-
-		log.Printf("%+v\n", kbds)
 		// logic part of log in
 		for key, values := range r.Form { // range over map
 			for i, value := range values {
@@ -64,13 +62,61 @@ func configProfile(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Println("Saved Config. Shutting down program.")
-		time.Sleep(time.Second * 10)
-		os.Exit(0)
 	}
 }
 
 func (k *keybinding) populate(key string, value string) {
+	keymap := map[string]int{
+		"a":     keybd.VK_A,
+		"b":     keybd.VK_B,
+		"c":     keybd.VK_C,
+		"d":     keybd.VK_D,
+		"e":     keybd.VK_E,
+		"f":     keybd.VK_F,
+		"g":     keybd.VK_G,
+		"h":     keybd.VK_H,
+		"i":     keybd.VK_I,
+		"j":     keybd.VK_J,
+		"k":     keybd.VK_K,
+		"l":     keybd.VK_L,
+		"m":     keybd.VK_M,
+		"n":     keybd.VK_N,
+		"o":     keybd.VK_O,
+		"p":     keybd.VK_P,
+		"q":     keybd.VK_Q,
+		"r":     keybd.VK_R,
+		"s":     keybd.VK_S,
+		"t":     keybd.VK_T,
+		"u":     keybd.VK_U,
+		"v":     keybd.VK_V,
+		"w":     keybd.VK_W,
+		"x":     keybd.VK_X,
+		"y":     keybd.VK_Y,
+		"z":     keybd.VK_Z,
+		"0":     keybd.VK_0,
+		"1":     keybd.VK_1,
+		"2":     keybd.VK_2,
+		"3":     keybd.VK_3,
+		"4":     keybd.VK_4,
+		"5":     keybd.VK_5,
+		"6":     keybd.VK_6,
+		"7":     keybd.VK_7,
+		"8":     keybd.VK_8,
+		"9":     keybd.VK_9,
+		"down":  keybd.VK_DOWN,
+		"esc":   keybd.VK_ESC,
+		"left":  keybd.VK_LEFT,
+		"right": keybd.VK_RIGHT,
+		"space": keybd.VK_SPACE,
+		"enter": keybd.VK_ENTER,
+		"up":    keybd.VK_UP,
+	}
+
+	if _, ok := keymap[value]; !ok {
+		log.Println("Invalid Key")
+		return
+	}
+
 	if key == "A" {
 		k.A = value
 	} else if key == "B" {
