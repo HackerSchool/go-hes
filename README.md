@@ -2,6 +2,11 @@
 HackerSchool HES driver written in Go  
 [Original driver with config utility](https://github.com/HackerSchool/HES)
 
+## Install
+```
+$ go get github.com/jguer/go-hes
+```
+
 ## New features
 - Pressing select 5 consecutive times closes the driver 
 - HTML based config utility
