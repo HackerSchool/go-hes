@@ -8,16 +8,25 @@ $ go get -u github.com/jguer/go-hes
 ```
 
 ## Running go-hes
-
-Windows users:
-```
-Double click executable in %GOPATH%/bin
-```
 Linux and Mac users:
 ```
 sudo $GOPATH/bin/go-hes
 ```
 Without sudo, the driver will fail to send keys.
+
+Windows users:
+```
+Double click executable in %GOPATH%/bin
+```
+### Config
+Linux and Mac users:
+```
+$GOPATH/bin/go-hes config
+```
+Windows Users
+```
+%GOPATH%\bin\go-hes config
+```
 ## New features
 - Pressing select 5 consecutive times closes the driver 
 - HTML based config utility
