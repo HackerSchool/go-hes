@@ -2,11 +2,22 @@
 HackerSchool HES driver written in Go  
 [Original driver with config utility](https://github.com/HackerSchool/HES)
 
-## Install
+## Install and Update
 ```
-$ go get github.com/jguer/go-hes
+$ go get -u github.com/jguer/go-hes
 ```
 
+## Running go-hes
+
+Windows users:
+```
+Double click executable in %GOPATH%/bin
+```
+Linux and Mac users:
+```
+sudo $GOPATH/bin/go-hes
+```
+Without sudo, the driver will fail to send keys.
 ## New features
 - Pressing select 5 consecutive times closes the driver 
 - HTML based config utility
