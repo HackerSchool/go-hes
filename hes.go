@@ -30,7 +30,7 @@ type serialport struct {
 }
 
 const challenge string = "Hi. Who are you?"
-const response string = "Hi. I'm HES"
+const response string = "H & P & R"
 const filename string = "mappings.json"
 
 // translateKeybindings converts strings from keybinding struct to keybd identifiers
@@ -132,10 +132,14 @@ func main() {
 
 	mode := &s.Mode{
 		BaudRate: 9600,
+		Parity:   s.NoParity,
+		DataBits: 8,
+		StopBits: s.OneStopBit,
 	}
 
 	resP := make(chan serialport, 1)
 	exit := make(chan bool, 1)
+	disconnect := make(chan bool, 1)
 	var connections []string
 	var i int
 
@@ -177,11 +181,15 @@ func main() {
 		case port := <-resP:
 			if port.sp != nil {
 				log.Printf("Communication established with %v\n", port.name)
-				go driver.CreateController(port.sp, translateKeybindings(kbds[i]), exit)
+				go driver.CreateController(port.sp, translateKeybindings(kbds[i]), exit, disconnect)
+				defer port.sp.Close()
 				i++
 			}
 		case <-time.After(time.Second * 10):
 			continue
+		case <-disconnect:
+			connections = connections[:0]
+			i = 0
 		case <-exit:
 			os.Exit(0)
 		}
@@ -201,13 +209,14 @@ func handshake(portName string, mode *s.Mode, resP chan serialport) {
 		log.Println(err)
 	}
 
-	buff := make([]byte, 30)
+	buff := make([]byte, 100)
 	n, err := port.Read(buff)
 	if err != nil {
 		log.Println(err)
 	}
+	log.Println(string(buff[:n]))
 
-	if strings.Contains(string(buff[:n]), response) {
+	if strings.ContainsAny(string(buff[:n]), response) {
 		resP <- serialport{
 			name: portName,
 			sp:   port,

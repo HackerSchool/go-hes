@@ -2,7 +2,7 @@ package driver
 
 import (
 	"bufio"
-	"log"
+	"fmt"
 	"runtime"
 	"strconv"
 	"time"
@@ -11,83 +11,72 @@ import (
 	s "go.bug.st/serial.v1"
 )
 
-const repeatDelay time.Duration = 150 //Milliseconds
-const sleepTime time.Duration = 1200  //Milliseconds
+const sleepTime time.Duration = 1 //Milliseconds
 
 // CreateController reads all valid serial ports
 // and handles all communication and key interpretation.
-func CreateController(port s.Port, kbArray [8]int, exit chan bool) {
-	// Creates Keyboard
-	kb, err := keybd.NewKeyBonding()
-	if err != nil {
-		log.Fatal(err)
-	}
+func CreateController(port s.Port, kbArray [8]int, exit chan<- bool, disconnect chan<- bool) {
+	keybd.NewKeyBonding()
 	// Arduino and Keyboard Setup time
 	if runtime.GOOS == "linux" {
-		time.Sleep(sleepTime * time.Millisecond)
+		time.Sleep(sleepTime * time.Second)
 	}
 
 	reader := bufio.NewReader(port)
 	//Each HES key has its on channel to signal completion
-	var signal [8]chan bool
 	index := 0
 	counter := 0
 
-	for i := range signal {
-		signal[i] = make(chan bool)
-	}
+	status := make(chan int)
+
+	go sendKeys(status, kbArray)
 
 	for {
 		readKey, err := reader.ReadBytes('\n')
+		// fmt.Println("Read keys", string(readKey))
 		if err != nil {
-			panic(err)
+			disconnect <- true
+			fmt.Println("Lost connection to one controller. Driver Reset.")
+			return
 		}
 
 		if readKey[0] == 'P' {
-			// log.Println("Pressed")
 			index, _ = strconv.Atoi(string(readKey[1]))
+			status <- index
 
 			//Pressing Select 5 Times closes the controller
 			if index == 0 {
 				counter++
 				if counter == 5 {
-					port.Close()
 					exit <- true
 				}
 			} else {
 				counter = 0
 			}
-			go sendKeys(signal[index], readKey[1], kb, kbArray)
+
 		} else if readKey[0] == 'R' {
 			index, _ = strconv.Atoi(string(readKey[1]))
-			signal[index] <- true
-			// log.Println("Released")
+			status <- index
 		}
-		// log.Println(string(read_key))
 	}
 }
 
-// gkey converts the received key to a keyboard key code.
-func gkey(key byte, kbArray [8]int) int {
-	x, _ := strconv.Atoi(string(key))
-	return kbArray[x]
-}
-
 // sendKeys handles sending keystrokes to host system.
-func sendKeys(signal chan bool, key byte, kb keybd.KeyBonding, kbArray [8]int) {
-	kb.SetKeys(gkey(key, kbArray)) //set keys
-	var err error
+func sendKeys(signal <-chan int, kbArray [8]int) {
+	pressed := [8]bool{}
+	var i int
 	for {
-		select {
-		case <-signal:
-			return
-		default:
-			// log.Println("Sent a keystroke " + string(key))
-			err = kb.Launching() //launch
-			if err != nil {
-				panic(err)
-			}
-			time.Sleep(repeatDelay * time.Millisecond)
+		i = <-signal
+		keybdn := kbArray[i] //set keys
+		if !pressed[i] {
+			pressed[i] = true
+			keybd.DownKey(kbArray[i])
+
+		} else {
+			pressed[i] = false
+			keybd.UpKey(keybdn)
 		}
+
+		keybd.Sync()
 	}
 }
