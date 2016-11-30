@@ -190,6 +190,7 @@ func main() {
 		case <-disconnect:
 			connections = connections[:0]
 			i = 0
+			time.Sleep(2 * time.Second)
 		case <-exit:
 			os.Exit(0)
 		}
