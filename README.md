@@ -1,4 +1,5 @@
 # go-hes
+#### Part of [HES-V2](https://github.com/HackerSchool/HES-V2)
 HackerSchool HES driver written in Go  
 [Original driver with config utility](https://github.com/HackerSchool/HES)
 
