@@ -5,7 +5,7 @@ HackerSchool HES driver written in Go
 
 ## Install and Update
 ```
-$ go get -u github.com/jguer/go-hes
+$ got get -u github.com/hackerschool/go-hes
 ```
 
 ## Running go-hes
