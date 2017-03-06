@@ -6,15 +6,22 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	keybd "github.com/jguer/keybd_event"
 )
 
 // readProfile unmarshalls the json containing keybind information for HES.
 func readProfile() (kbds []keybinding, err error) {
+	file := "mappings.json"
+	if _, err := os.Stat(file); os.IsNotExist(err) {
+		file = projDir + file
+	}
+
 	// Read the whole file at once
 	// Should not be done but I'm feeling rather trusting of user input today
-	raw, err := ioutil.ReadFile(filename)
+	raw, err := ioutil.ReadFile(filepath.FromSlash(file))
 	if err != nil {
 		return
 	}
@@ -28,13 +35,17 @@ func readProfile() (kbds []keybinding, err error) {
 }
 
 func saveProfile(kbds []keybinding) (err error) {
+	file := "mappings.json"
+	if _, err := os.Stat(file); os.IsNotExist(err) {
+		file = projDir + file
+	}
+
 	kbytes, err := json.Marshal(kbds)
 	if err != nil {
 		return
 	}
 
-	err = ioutil.WriteFile(filename, kbytes, 0644)
-
+	err = ioutil.WriteFile(filepath.FromSlash(file), kbytes, 0644)
 	return
 }
 
@@ -44,9 +55,14 @@ func configProfile(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
+	templateFile := "config.html"
+	if _, err := os.Stat(templateFile); os.IsNotExist(err) {
+		templateFile = projDir + templateFile
+	}
+
 	log.Printf("%+v\n", kbds)
 	if r.Method == "GET" {
-		t, _ := template.ParseFiles("config.html")
+		t, _ := template.ParseFiles(filepath.FromSlash(templateFile))
 		t.Execute(w, kbds)
 	} else {
 		if errf := r.ParseForm(); errf != nil {
@@ -139,7 +155,12 @@ func (k *keybinding) populate(key string, value string) {
 }
 
 func startConfig() {
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	dir := "static"
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		dir = projDir + dir
+	}
+
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(filepath.FromSlash(dir)))))
 	http.HandleFunc("/", configProfile)
 	log.Println("Config at http://127.0.0.1:9090/")
 	err := http.ListenAndServe(":9090", nil) // setting listening port

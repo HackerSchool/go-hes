@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
@@ -31,7 +32,19 @@ type serialport struct {
 
 const challenge string = "Hi. Who are you?"
 const response string = "H & P & R"
-const filename string = "mappings.json"
+
+var projDir string
+
+func init() {
+	projDir = os.Getenv("GOPATH") + "/src/github.com/hackerschool/go-hes/"
+	if _, err := os.Stat(filepath.FromSlash(projDir)); os.IsNotExist(err) {
+		if runtime.GOOS == "windows" {
+			projDir = os.Getenv("USERPROFILE") + "/go/src/github.com/hackerschool/go-hes/"
+		} else if runtime.GOOS == "linux" || runtime.GOOS == "darwin" {
+			projDir = os.Getenv("HOME") + "/go/src/github.com/hackerschool/go-hes/"
+		}
+	}
+}
 
 // translateKeybindings converts strings from keybinding struct to keybd identifiers
 func translateKeybindings(kb keybinding) [8]int {
@@ -221,7 +234,7 @@ func handshake(portName string, mode *s.Mode, resP chan serialport) {
 		resP <- serialport{
 			name: portName,
 			sp:   port,
-		}
+		
 	}
 
 	resP <- serialport{
