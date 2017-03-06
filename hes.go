@@ -234,11 +234,11 @@ func handshake(portName string, mode *s.Mode, resP chan serialport) {
 		resP <- serialport{
 			name: portName,
 			sp:   port,
-		
-	}
+		}
 
-	resP <- serialport{
-		name: portName,
-		sp:   nil,
+		resP <- serialport{
+			name: portName,
+			sp:   nil,
+		}
 	}
 }
