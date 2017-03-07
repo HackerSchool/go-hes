@@ -9,7 +9,7 @@ $ got get -u github.com/hackerschool/go-hes
 ```
 
 ## Running go-hes
-The controller can be plugged in before or after running the driver, it will scan for COM ports every 10 seconds.
+The controller can be plugged in before or after running the driver, it will scan for COM ports every 10 seconds.  
 Linux and Mac users:
 ```
 sudo $GOPATH/bin/go-hes
